@@ -7,7 +7,8 @@ import (
 )
 
 var source = `func test() {
-	number := 123
+	num := 123
+	var num2 = 123
 }
 `
 
@@ -19,9 +20,16 @@ func main() {
 	l.AddRule("<rparen>", "\\)")
 	l.AddRule("<lbrace>", "{")
 	l.AddRule("<rbrace>", "}")
+
 	l.AddRule("<assign>", ":=")
+	l.AddRule("<eq>", "=")
+
+	l.AddRule("<func_kw>", "func")
+	l.AddRule("<var_kw>", "var")
+
 	l.AddRule("<identifier>", "[A-Za-z_][A-Za-z0-9]+")
 	l.AddRule("<number>", "[0-9]+")
+
 	l.Ignore("\\s+")
 	/*l.SetLexerErrorFunc(func(l lexer.Lexer) error {
 		return fmt.Errorf("there was an error, %v", l)
