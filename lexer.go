@@ -6,9 +6,7 @@ import (
 	"strings"
 )
 
-var newlineChars = regexp.MustCompile("\n")
-
-// the lexer struct
+// struct having related fields for representing a lexer
 type Lexer struct {
 	ls               LexerState                // internal state of the lexer
 	lexRules         map[string]*regexp.Regexp // mapping from Type names to regex Rules to be used with a token
@@ -17,26 +15,29 @@ type Lexer struct {
 	lexerErrorFunc   func(ls LexerState) error // func to call for error
 }
 
-// Create a new lexer for a given source string
+// Create a new lexer for a given source text
 func NewLexer(source string) *Lexer {
 	return &Lexer{ls: LexerState{SourceLength: len(source) - 1, Source: source},
 		lexRules: make(map[string]*regexp.Regexp), lexerErrorFunc: defaultLexerError}
 }
 
-// Tokens are returned only for these lexRules
+// When processing the source, all patterns matched by the regex
+// generates a token with the Token.Type as the tokenType and
+// the Token.Value as the pattern that was matched.
 func (l *Lexer) AddRule(tokenType, regexv string) {
 	// "^" is added as a prefix to all the regular expressions to match at the front
 	l.lexRules[tokenType] = regexp.MustCompile("^" + regexv)
 	l.lexRulesKeyOrder = append(l.lexRulesKeyOrder, tokenType)
 }
 
-// Tokens are not created for these regular expressions
+// When processing the source,
+// all patterns matched by the regex are skipped over.
 func (l *Lexer) Ignore(regexv string) {
 	// "^" is added as a prefix to all the regular expressions to match at the front
 	l.ignoreRules = append(l.ignoreRules, regexp.MustCompile("^"+regexv))
 }
 
-// returns a slice of tokens to
+// Processes the source text and returns the tokens
 func (l *Lexer) GetTokens() ([]*Token, error) {
 	// build the slice of tokens
 	var tokens []*Token
@@ -54,7 +55,7 @@ func (l *Lexer) GetTokens() ([]*Token, error) {
 	return tokens, nil
 }
 
-// This function is used to replace the default error handler
+// Set a custom error handler for the lexer
 func (l *Lexer) SetLexerErrorFunc(f func(ls LexerState) error) {
 	l.lexerErrorFunc = f
 }
@@ -102,6 +103,10 @@ func (l *Lexer) nextToken() (*Token, error) {
 		return nil, nil
 	}
 }
+
+// regex for newline characters
+// used only by updateLexerState
+var newlineChars = regexp.MustCompile("\n")
 
 // calculates and updates the lexer state based on the current position in the source
 func (l *Lexer) updateLexerState() {

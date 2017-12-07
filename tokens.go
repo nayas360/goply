@@ -1,11 +1,11 @@
 package goply
 
-// The Token Type
+// struct having related fields for representing a token
 type Token struct {
 	Type             string // The Type of token
 	Value            string // The Value of the token
 	Length           int    // The length of the token
-	StartingPosition int    // The starting StartingPosition of the Token in the source
+	StartingPosition int    // The starting position of the Token in the source
 	LineNum          int    // The line number of the token
 	ColNum           int    // the column number of the token
 }
