@@ -12,8 +12,6 @@ var source = `func test() {
 }
 `
 
-//var source = "root test = true {\n\tnode {}\n}"
-
 func main() {
 	l := goply.NewLexer(source)
 	l.AddRule("<lparen>", "\\(")
@@ -41,8 +39,8 @@ func main() {
 		panic(err)
 	}
 
-	for _, t := range tokens {
-		fmt.Printf("Got %s : \"%s\"(%d,%d) @{%d, %d}\n", t.Type, t.Value, t.StartingPosition,
-			t.StartingPosition+t.Length-1, t.LineNum, t.ColNum)
+	for _, token := range tokens {
+		fmt.Printf("Got %s : \"%s\"(%d,%d) @{%d, %d}\n", token.Type, token.Value, token.StartingPosition,
+			token.StartingPosition+token.Length-1, token.LineNum, token.ColNum)
 	}
 }

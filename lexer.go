@@ -40,13 +40,13 @@ func (l *Lexer) Ignore(regexv string) {
 func (l *Lexer) GetTokens() ([]*Token, error) {
 	// build the slice of tokens
 	var tokens []*Token
-	token, err := l.next()
+	token, err := l.nextToken()
 	if err != nil {
 		return nil, err
 	}
-	for ; token != nil; {
+	for token != nil {
 		tokens = append(tokens, token)
-		token, err = l.next()
+		token, err = l.nextToken()
 		if err != nil {
 			return nil, err
 		}
@@ -64,8 +64,8 @@ func defaultLexerError(ls LexerState) error {
 	return fmt.Errorf("could not match '%c'@%d with any rule", ls.Source[ls.Position], ls.Position)
 }
 
-// returns the next token from the source
-func (l *Lexer) next() (*Token, error) {
+// returns the nextToken token from the source
+func (l *Lexer) nextToken() (*Token, error) {
 	if l.ls.Position <= l.ls.SourceLength {
 
 		// go through all the ignored lexRules
@@ -74,7 +74,7 @@ func (l *Lexer) next() (*Token, error) {
 			if lexRule.MatchString(l.ls.Source[l.ls.Position:]) {
 				// add the length of token to be ignored and skip by recursively calling myself
 				l.ls.Position += len(lexRule.FindString(l.ls.Source[l.ls.Position:]))
-				return l.next()
+				return l.nextToken()
 			}
 		}
 
