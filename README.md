@@ -2,7 +2,7 @@
 A pure go lexer and parser generator library.
 goply stands for **g**o **p**arser **l**ex **y**acc.
 
-It was inspired by [rply](https://github.com/alex/rply)
+This project was inspired by [rply](https://github.com/alex/rply)
 and David Beazley's [PLY](https://github.com/dabeaz/ply)
 both of which are excellent parser and lexer generator
 libraries for [python](https://www.python.org/).
