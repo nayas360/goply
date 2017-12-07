@@ -7,7 +7,7 @@ and David Beazley's [PLY](https://github.com/dabeaz/ply)
 both of which are excellent parser and lexer generator
 libraries for [python](https://www.python.org/).
 
-For those of you not familiar with the *nix tools _lex_ and _yacc_, 
+For those of you familiar with the *nix tools _lex_ and _yacc_, 
 _lex_ is the lexer generator and _yacc_ is the parser generator.
 So having a _parser_ in front of them in the acronym probably doesn't
 make any sense, but I liked the name goply and hence stuck with it,
