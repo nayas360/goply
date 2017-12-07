@@ -21,13 +21,13 @@ type Lexer struct {
 	curPosition      int                       // current position in the source string
 	curLineNum       int                       // current Line number
 	curColNum        int                       // current column number
-	/*lexerErrorFunc func(l Lexer) error*/ // func to call for error
+	lexerErrorFunc   func(ls LexerState) error // func to call for error
 }
 
 // Create a new lexer for a given source string
 func NewLexer(source string) *Lexer {
 	return &Lexer{sourceLength: len(source) - 1, source: source,
-		lexRules: make(map[string]*regexp.Regexp) /*, lexerErrorFunc: defaultLexerError*/ }
+		lexRules: make(map[string]*regexp.Regexp), lexerErrorFunc: defaultLexerError}
 }
 
 // Tokens are returned only for these lexRules
@@ -61,18 +61,23 @@ func (l *Lexer) GetTokens() ([]*Token, error) {
 	return tokens, nil
 }
 
-/*func (l *Lexer) lexerError() error {
-	return l.lexerErrorFunc(l)
+// wraps around the error func providing current lexer state as context
+func (l *Lexer) lexerError() error {
+	return l.lexerErrorFunc(LexerState{SourceLength: l.sourceLength,
+		Source: l.source, Position: l.curPosition, LineNum: l.curLineNum, ColNum: l.curColNum})
 }
 
-func (l Lexer) SetLexerErrorFunc(f func(l Lexer) error) {
+// This function is used to replace the default error handler
+func (l *Lexer) SetLexerErrorFunc(f func(ls LexerState) error) {
 	l.lexerErrorFunc = f
 }
 
-func defaultLexerError(l Lexer) error {
-	return fmt.Errorf("could not match '%c'@%d with any rule", l.source[l.curPosition], l.curPosition)
-}*/
+// The default error handler
+func defaultLexerError(ls LexerState) error {
+	return fmt.Errorf("could not match '%c'@%d with any rule", ls.Source[ls.Position], ls.Position)
+}
 
+// returns the next token from the source
 func (l *Lexer) next() (*Token, error) {
 	if l.curPosition <= l.sourceLength {
 
@@ -108,7 +113,7 @@ func (l *Lexer) next() (*Token, error) {
 		}
 
 		// If here then Could not match anything
-		return nil, fmt.Errorf("could not match '%c'@%d with any lexRule", l.source[l.curPosition], l.curPosition)
+		return nil, l.lexerError()
 	} else {
 		return nil, nil
 	}

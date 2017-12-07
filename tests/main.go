@@ -31,8 +31,9 @@ func main() {
 	l.AddRule("<number>", "[0-9]+")
 
 	l.Ignore("\\s+")
-	/*l.SetLexerErrorFunc(func(l lexer.Lexer) error {
-		return fmt.Errorf("there was an error, %v", l)
+
+	/*l.SetLexerErrorFunc(func(ls goply.LexerState) error {
+		return fmt.Errorf("there was an error")
 	})*/
 
 	tokens, err := l.GetTokens()
@@ -41,7 +42,7 @@ func main() {
 	}
 
 	for _, t := range tokens {
-		fmt.Printf("Got %s : '%s'(%d,%d) @{%d, %d}\n", t.Type, t.Value, t.StartingPosition,
+		fmt.Printf("Got %s : \"%s\"(%d,%d) @{%d, %d}\n", t.Type, t.Value, t.StartingPosition,
 			t.StartingPosition+t.Length-1, t.LineNum, t.ColNum)
 	}
 }
