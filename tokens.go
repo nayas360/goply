@@ -1,4 +1,3 @@
-// package name: goply
 package goply
 
 // The Token Type

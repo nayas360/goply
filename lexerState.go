@@ -1,6 +1,7 @@
 package goply
 
-// this is passed to an error func
+// used by lexer internally to maintain its state
+// passed to error handler and maybe used to report a useful error
 type LexerState struct {
 	SourceLength int    // the length of the source string
 	Source       string // the source string itself
