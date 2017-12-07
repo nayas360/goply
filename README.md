@@ -1,5 +1,6 @@
 # goply
 A pure go lexer and parser generator library.
+
 goply stands for **g**o **p**arser **l**ex **y**acc.
 
 This project was inspired by [rply](https://github.com/alex/rply)
@@ -10,10 +11,10 @@ libraries for [python](https://www.python.org/).
 For those of you familiar with the *nix tools _lex_ and _yacc_, 
 _lex_ is the lexer generator and _yacc_ is the parser generator.
 So having a _parser_ in front of them in the acronym probably doesn't
-make any sense, but I liked the name goply and hence stuck with it,
-redefining the _p_ from _python_ to _parser_, though _yacc_ itself
+make any sense, but I liked the name goply and stuck with it,
+redefining the _p_ from _python_ to _parser_. Though _yacc_ itself
 is the parser generator and the acronym expansion does not
-make sense, so ignore it ;)  
+make sense, so ignore it ;)
 
 ## Making a lexer
 Making a lexer with goply is as simple as it gets,
