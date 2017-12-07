@@ -30,17 +30,13 @@ func main() {
 
 	l.Ignore("\\s+")
 
-	/*l.SetLexerErrorFunc(func(ls goply.LexerState) error {
-		return fmt.Errorf("there was an error")
-	})*/
-
 	tokens, err := l.GetTokens()
 	if err != nil {
 		panic(err)
 	}
 
 	for _, token := range tokens {
-		fmt.Printf("Got %s : \"%s\"(%d,%d) @{%d, %d}\n", token.Type, token.Value, token.StartingPosition,
-			token.StartingPosition+token.Length-1, token.LineNum, token.ColNum)
+		fmt.Printf("Got %s : \"%s\" on line %d column %d \n", token.Type, token.Value, token.LineNum,
+			token.ColNum)
 	}
 }

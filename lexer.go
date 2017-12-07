@@ -61,7 +61,8 @@ func (l *Lexer) SetLexerErrorFunc(f func(ls LexerState) error) {
 
 // The default error handler
 func defaultLexerError(ls LexerState) error {
-	return fmt.Errorf("could not match '%c'@%d with any rule", ls.Source[ls.Position], ls.Position)
+	return fmt.Errorf("line %d, column %d: could not match '%c' with any rule", ls.LineNum, ls.ColNum,
+		ls.Source[ls.Position])
 }
 
 // returns the nextToken token from the source
@@ -72,6 +73,8 @@ func (l *Lexer) nextToken() (*Token, error) {
 		for _, lexRule := range l.ignoreRules {
 			// check if there is a match
 			if lexRule.MatchString(l.ls.Source[l.ls.Position:]) {
+				// update the lexer state
+				l.updateLexerState()
 				// add the length of token to be ignored and skip by recursively calling myself
 				l.ls.Position += len(lexRule.FindString(l.ls.Source[l.ls.Position:]))
 				return l.nextToken()
@@ -83,16 +86,9 @@ func (l *Lexer) nextToken() (*Token, error) {
 			lexRule := l.lexRules[tokenType]
 			if lexRule.MatchString(l.ls.Source[l.ls.Position:]) {
 				value := lexRule.FindString(l.ls.Source[l.ls.Position:])
-				l.ls.LineNum = strings.Count(l.ls.Source[:l.ls.Position], "\n")
-				newLineIndex := newlineChars.FindAllStringIndex(l.ls.Source[:l.ls.Position], l.ls.LineNum)
-				//colNum := l.ls.Position
-				if len(newLineIndex) > 0 {
-					//fmt.Println(newLineIndex[len(newLineIndex)-1][0] - 1)
-					l.ls.ColNum = l.ls.Position - newLineIndex[len(newLineIndex)-1][0] - 1
-				} else {
-					l.ls.ColNum = l.ls.Position
-				}
-				//l.ls.ColNum = colNum
+				// update the lexer state
+				l.updateLexerState()
+				// create the token to return later
 				token := newToken(tokenType, value, l.ls.Position, l.ls.LineNum, l.ls.ColNum)
 				// after processing add to the curpos
 				l.ls.Position += len(value)
@@ -104,5 +100,16 @@ func (l *Lexer) nextToken() (*Token, error) {
 		return nil, l.lexerErrorFunc(l.ls)
 	} else {
 		return nil, nil
+	}
+}
+
+// calculates and updates the lexer state based on the current position in the source
+func (l *Lexer) updateLexerState() {
+	l.ls.LineNum = strings.Count(l.ls.Source[:l.ls.Position], "\n")
+	newLineIndex := newlineChars.FindAllStringIndex(l.ls.Source[:l.ls.Position], l.ls.LineNum)
+	if len(newLineIndex) > 0 {
+		l.ls.ColNum = l.ls.Position - newLineIndex[len(newLineIndex)-1][0] - 1
+	} else {
+		l.ls.ColNum = l.ls.Position
 	}
 }
