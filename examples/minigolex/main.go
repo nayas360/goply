@@ -8,12 +8,12 @@ import (
 
 var source = `func test() {
 	num := 123
-	var num2 = 123
+	var num2 := 123
 }
 `
 
 func main() {
-	l := goply.NewLexer(source)
+	l := goply.NewLexerStrict(source)
 	l.AddRule("<lparen>", "\\(")
 	l.AddRule("<rparen>", "\\)")
 	l.AddRule("<lbrace>", "{")

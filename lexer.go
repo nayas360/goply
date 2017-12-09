@@ -13,12 +13,23 @@ type Lexer struct {
 	lexRulesKeyOrder []string                  // slice of keys for predictable iteration over lexRules
 	ignoreRules      []*regexp.Regexp          // regular expressions to be ignored
 	lexerErrorFunc   func(ls LexerState) error // func to call for error
+	strictMode       bool                      // if true, returns error if no rules can be matched
 }
 
 // Create a new lexer for a given source text
+// This skips over characters that cannot be matched
+// by any rule
 func NewLexer(source string) *Lexer {
 	return &Lexer{ls: LexerState{SourceLength: len(source) - 1, Source: source},
-		lexRules: make(map[string]*regexp.Regexp), lexerErrorFunc: defaultLexerError}
+		lexRules: make(map[string]*regexp.Regexp), lexerErrorFunc: defaultLexerError, strictMode: false}
+}
+
+// Create a strict lexer for a given source text
+// This returns an error when processing if it cannot match any rule
+// for the sub string it is trying to match
+func NewLexerStrict(source string) *Lexer {
+	return &Lexer{ls: LexerState{SourceLength: len(source) - 1, Source: source},
+		lexRules: make(map[string]*regexp.Regexp), lexerErrorFunc: defaultLexerError, strictMode: true}
 }
 
 // When processing the source, all patterns matched by the regex
@@ -39,6 +50,10 @@ func (l *Lexer) Ignore(regexv string) {
 
 // Processes the source text and returns the tokens
 func (l *Lexer) GetTokens() ([]*Token, error) {
+	// this is true if GetToken has been called once already
+	if l.ls.Position > 0 {
+		return nil, fmt.Errorf("the tokens have aready been generated")
+	}
 	// build the slice of tokens
 	var tokens []*Token
 	token, err := l.nextToken()
@@ -97,8 +112,15 @@ func (l *Lexer) nextToken() (*Token, error) {
 			}
 		}
 
-		// If here then Could not match anything
-		return nil, l.lexerErrorFunc(l.ls)
+		if l.strictMode {
+			// strict mode enabled and could not match anything
+			return nil, l.lexerErrorFunc(l.ls)
+		} else {
+			// strict mode disabled skip over unmatched chars one by one
+			l.ls.Position += 1
+			l.updateLexerState()
+			return l.nextToken()
+		}
 	} else {
 		return nil, nil
 	}
