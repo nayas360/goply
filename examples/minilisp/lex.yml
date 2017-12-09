@@ -1,0 +1,15 @@
+# this file should exist in the same directory as the binary
+lexer:
+  rules :
+    - type  : "<lparen>"
+      regex : "\\("
+    - type  : "<rparen>"
+      regex : "\\)"
+    - type  : "<op_plus>"
+      regex : "\\+"
+    - type  : "<op_minus>"
+      regex : "-"
+    - type  : "<integer>"
+      regex : "[0-9]+"
+  ignore :
+    - "\\s+"

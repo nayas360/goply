@@ -1,6 +1,7 @@
 package goply
 
-// struct having fields for representing the state of a lexer
+// Struct having fields for representing the state of a lexer
+// it is passed as an argument to lexerErrorFunc
 type LexerState struct {
 	SourceLength int    // the length of the source string
 	Source       string // the source string itself

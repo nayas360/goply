@@ -1,6 +1,6 @@
 package goply
 
-// struct having related fields for representing a token
+// Struct having related fields for representing a token
 type Token struct {
 	Type             string // the Type of token
 	Value            string // the Value of the token

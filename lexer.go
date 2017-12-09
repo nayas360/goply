@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// struct having related fields for representing a lexer
+// Struct having related fields for representing a lexer
 type Lexer struct {
 	ls               LexerState                // internal state of the lexer
 	lexRules         map[string]*regexp.Regexp // mapping from Type names to regex Rules to be used with a token
