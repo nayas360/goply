@@ -1,8 +1,6 @@
 package goply
 
 import (
-	"crypto/sha1"
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -75,6 +73,7 @@ func (l *Lexer) GetTokens(sourceText string) ([]*Token, error) {
 		}
 	}
 
+	// store the tokens in the cache
 	l.tokenCache[sourceSha1] = tokens
 
 	return tokens, nil
@@ -83,12 +82,6 @@ func (l *Lexer) GetTokens(sourceText string) ([]*Token, error) {
 // Set a custom error handler for the lexer
 func (l *Lexer) SetLexerErrorFunc(f func(ls LexerState) error) {
 	l.lexerErrorFunc = f
-}
-
-// The default error handler
-func defaultLexerError(ls LexerState) error {
-	return fmt.Errorf("line %d, column %d: could not match '%c' with any rule", ls.LineNum, ls.ColNum,
-		ls.Source[ls.Position])
 }
 
 // returns the nextToken token from the source
@@ -149,9 +142,4 @@ func (l *Lexer) updateLexerState() {
 	} else {
 		l.ls.ColNum = l.ls.Position
 	}
-}
-
-// computes and returns a sha1 hash
-func computeSha1(text string) string {
-	return fmt.Sprintf("%x", sha1.Sum([]byte(text)))
 }
