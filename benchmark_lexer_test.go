@@ -13,7 +13,7 @@ func BenchmarkNewLexer(b *testing.B) {
 }
 `
 	for i := 0; i < b.N; i++ {
-		lexer := goply.NewLexer(source)
+		lexer := goply.NewLexer(false)
 		lexer.AddRule("<lparen>", "\\(")
 		lexer.AddRule("<rparen>", "\\)")
 		lexer.AddRule("<lbrace>", "{")
@@ -29,7 +29,7 @@ func BenchmarkNewLexer(b *testing.B) {
 		lexer.AddRule("<number>", "[0-9]+")
 
 		lexer.Ignore("\\s+")
-		tokens, err := lexer.GetTokens()
+		tokens, err := lexer.GetTokens(source)
 		if err != nil {
 			b.Errorf("got error instead of tokens, %s", err)
 		}

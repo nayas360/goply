@@ -9,7 +9,7 @@ import (
 func ExampleNewLexer() {
 	// Create a new lexer with lisp like syntax
 	// The stray = is has no matching rule but should not cause an error
-	lexer := goply.NewLexer("= (+ 10 20)")
+	lexer := goply.NewLexer(false)
 	// match left parenthesis
 	lexer.AddRule("<lparen>", "\\(")
 	// match right parenthesis
@@ -21,7 +21,7 @@ func ExampleNewLexer() {
 	// ignore all whitespace
 	lexer.Ignore("\\s+")
 	// get the tokens
-	tokens, err := lexer.GetTokens()
+	tokens, err := lexer.GetTokens("= (+ 10 20)")
 	if err != nil {
 		panic(err)
 	}
@@ -37,9 +37,9 @@ func ExampleNewLexer() {
 	// Got <rparen> : )
 }
 
-func ExampleNewLexerStrict() {
+func ExampleNewLexer_strict() {
 	// Create a new lexer with lisp like syntax
-	lexer := goply.NewLexerStrict("(+ 10 20)")
+	lexer := goply.NewLexer(true)
 	// match left parenthesis
 	lexer.AddRule("<lparen>", "\\(")
 	// match right parenthesis
@@ -51,7 +51,7 @@ func ExampleNewLexerStrict() {
 	// ignore all whitespace
 	lexer.Ignore("\\s+")
 	// get the tokens
-	tokens, err := lexer.GetTokens()
+	tokens, err := lexer.GetTokens("(+ 10 20)")
 	if err != nil {
 		panic(err)
 	}
@@ -71,6 +71,7 @@ func ExampleNewLexerFromYamlConfig() {
 	// The yaml config source
 	// strict_mode is true by default
 	yamlSource := `
+version : "0.0.1"
 lexer:
   rules :
     - type  : "<var_kw>"
@@ -84,12 +85,12 @@ lexer:
 `
 	source := "var = 123"
 	// try to generate a lexer from the given source and yaml config
-	lex, err := goply.NewLexerFromYamlConfig([]byte(yamlSource), source)
+	lex, err := goply.NewLexerFromYamlConfig([]byte(yamlSource))
 	if err != nil {
 		panic(err)
 	}
 	// get the tokens
-	tokens, err := lex.GetTokens()
+	tokens, err := lex.GetTokens(source)
 	if err != nil {
 		panic(err)
 	}
@@ -108,6 +109,7 @@ func ExampleNewLexerFromYamlConfig_lenient() {
 	// The strict_mode field sets the strictness of the lexer
 	// it is true by default
 	yamlSource := `
+version : "0.0.1"
 lexer:
   strict_mode : false
   rules :
@@ -122,12 +124,12 @@ lexer:
 `
 	source := "var = 123"
 	// try to generate a lexer from the given source and yaml config
-	lex, err := goply.NewLexerFromYamlConfig([]byte(yamlSource), source)
+	lex, err := goply.NewLexerFromYamlConfig([]byte(yamlSource))
 	if err != nil {
 		panic(err)
 	}
 	// get the tokens
-	tokens, err := lex.GetTokens()
+	tokens, err := lex.GetTokens(source)
 	if err != nil {
 		panic(err)
 	}

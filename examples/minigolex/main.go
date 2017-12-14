@@ -13,7 +13,7 @@ var source = `func test() {
 `
 
 func main() {
-	l := goply.NewLexerStrict(source)
+	l := goply.NewLexer(true)
 	l.AddRule("<lparen>", "\\(")
 	l.AddRule("<rparen>", "\\)")
 	l.AddRule("<lbrace>", "{")
@@ -30,7 +30,7 @@ func main() {
 
 	l.Ignore("\\s+")
 
-	tokens, err := l.GetTokens()
+	tokens, err := l.GetTokens(source)
 	if err != nil {
 		panic(err)
 	}

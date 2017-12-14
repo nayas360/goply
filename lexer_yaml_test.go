@@ -1,7 +1,6 @@
 package goply_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/nayas360/goply"
@@ -9,6 +8,7 @@ import (
 
 func TestNewLexerFromYamlConfig(t *testing.T) {
 	yamlSource := `
+version : "0.0.1"
 lexer:
   rules :
     - type  : "<var_kw>"
@@ -21,15 +21,14 @@ lexer:
     - "\\s+"
 `
 	source := "var = 123"
-	lex, err := goply.NewLexerFromYamlConfig([]byte(yamlSource), source)
+	lex, err := goply.NewLexerFromYamlConfig([]byte(yamlSource))
 	if err != nil {
 		t.Errorf("could not create a new lexer from yaml config, %s", err)
 	}
-	tokens, err := lex.GetTokens()
+	tokens, err := lex.GetTokens(source)
 	if err != nil {
 		t.Errorf("got error instead of tokens, %s", err)
 	}
-	fmt.Println(tokens)
 	if len(tokens) != 3 {
 		t.Errorf("expected 3 tokens got, %s", len(tokens))
 	}
