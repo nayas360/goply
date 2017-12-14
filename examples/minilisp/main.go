@@ -33,6 +33,8 @@ func main() {
 	}
 }
 
+// assumes GOPATH="GOPLY_PATH:OTHER_PATH"
+// $GOPATH/src/github.com/nayas360/goply/examples/minilisp/lex.yml should exist
 func getYamlConfig() ([]byte, error) {
 	var GOP string
 

@@ -7,9 +7,12 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+var goplyConfVersion = "0.0.1"
+
 // Struct used to read the yaml config into
 type goplyYamlConfig struct {
-	Lexer struct {
+	ConfVersion string `yaml:"version"`
+	Lexer       struct {
 		StrictMode bool `yaml:"strict_mode,omitempty"`
 		Rules      []struct {
 			Type  string `yaml:"type"`
@@ -32,6 +35,11 @@ func NewLexerFromYamlConfig(yamlConfig []byte, source string) (*Lexer, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if gyc.ConfVersion != goplyConfVersion {
+		return nil, fmt.Errorf("expected yaml conf version %s, got %s", goplyConfVersion, gyc.ConfVersion)
+	}
+
 	lex := &Lexer{ls: LexerState{SourceLength: len(source) - 1, Source: source},
 		lexRules: make(map[string]*regexp.Regexp), lexerErrorFunc: defaultLexerError, strictMode: gyc.Lexer.StrictMode}
 
