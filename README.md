@@ -19,9 +19,11 @@ make sense, so ignore it ;)
 ## Making a lexer
 Making a lexer with goply is as simple as it gets,
 only a single line is required:
-> lex := goply.NewLexer(source)
+> lex := goply.NewLexer(false)
 
-where source is a string containing the source contents.
+The above line would create a lenient lexer, meaning
+if a symbol cannot be matched to any rule it is simply ignored.
+The strict version would panic and return an error in this situation instead.
 
 Now for the lexer to actually work, lexical rules need to be
 added. A lexical rule is a mapping from a token to a _regular
@@ -46,6 +48,11 @@ case its an integer value.
 
 These _token type's_ will actually be used by the parser in order
 to denote terminal tokens in the grammar.
+
+Now to actually get the tokens from the source file
+> tokens, err := lex.GetTokens(source)
+
+Where `source` is a string containing the source contents.
 
 ## Lexer Gotcha's
 * The lexer uses [regexp package](https://golang.org/pkg/regexp/) from the go standard library. 
