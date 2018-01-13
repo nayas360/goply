@@ -14,7 +14,7 @@ func TestNewLexer(t *testing.T) {
 	var num2 = 123
 }
 `
-	lexer := goply.NewLexer(source)
+	lexer := goply.NewLexer(false)
 	lexer.AddRule("<lparen>", "\\(")
 	lexer.AddRule("<rparen>", "\\)")
 	lexer.AddRule("<lbrace>", "{")
@@ -33,7 +33,7 @@ func TestNewLexer(t *testing.T) {
 
 	lexer.Ignore("\\s+")
 
-	tokens, err := lexer.GetTokens()
+	tokens, err := lexer.GetTokens(source)
 	if err != nil {
 		t.Errorf("got error instead of tokens, %s", err)
 	}
@@ -46,7 +46,7 @@ func TestNewLexer(t *testing.T) {
 // tests lexer in strict mode
 func TestNewLexerStrict(t *testing.T) {
 	source := "num := 123"
-	lexer := goply.NewLexerStrict(source)
+	lexer := goply.NewLexer(true)
 
 	// the lexer is in strict mode,
 	// and cannot match the ':' character to any rule
@@ -58,7 +58,7 @@ func TestNewLexerStrict(t *testing.T) {
 
 	lexer.Ignore("\\s+")
 
-	_, err := lexer.GetTokens()
+	_, err := lexer.GetTokens(source)
 	if err == nil {
 		t.Errorf("expected an error, got none")
 	}
@@ -66,11 +66,11 @@ func TestNewLexerStrict(t *testing.T) {
 
 // tests custom error handler in strict mode
 func TestLexerStrict_SetLexerErrorFunc(t *testing.T) {
-	lexer := goply.NewLexerStrict("123")
+	lexer := goply.NewLexer(true)
 	lexer.SetLexerErrorFunc(func(ls goply.LexerState) error {
 		return fmt.Errorf("there was an error")
 	})
-	_, err := lexer.GetTokens()
+	_, err := lexer.GetTokens("123")
 	if fmt.Sprint(err) != "there was an error" {
 		t.Error("the custom error function was not set")
 	}
@@ -79,12 +79,12 @@ func TestLexerStrict_SetLexerErrorFunc(t *testing.T) {
 // tests custom error handler in lenient mode
 // the error function is ignored since no error is raised
 func TestLexer_SetLexerErrorFunc(t *testing.T) {
-	lexer := goply.NewLexer("123")
+	lexer := goply.NewLexer(false)
 	// the lexer error functions are ignored in lenient mode
 	lexer.SetLexerErrorFunc(func(ls goply.LexerState) error {
 		return fmt.Errorf("there was an error")
 	})
-	_, err := lexer.GetTokens()
+	_, err := lexer.GetTokens("123")
 	if err != nil {
 		t.Error("the lexer returned an error in lenient mode")
 	}

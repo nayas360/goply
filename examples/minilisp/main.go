@@ -18,12 +18,12 @@ func main() {
 		panic(err)
 	}
 	// get the lexer from the config and source
-	lex, err := goply.NewLexerFromYamlConfig(yamlConfig, source)
+	lex, err := goply.NewLexerFromYamlConfig(yamlConfig)
 	if err != nil {
 		panic(err)
 	}
 	// get the tokens
-	tokens, err := lex.GetTokens()
+	tokens, err := lex.GetTokens(source)
 	if err != nil {
 		panic(err)
 	}

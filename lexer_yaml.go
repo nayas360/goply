@@ -2,7 +2,6 @@ package goply
 
 import (
 	"fmt"
-	"regexp"
 
 	"gopkg.in/yaml.v2"
 )
@@ -11,7 +10,7 @@ var goplyConfVersion = "0.0.1"
 
 // Struct used to read the yaml config into
 type goplyYamlConfig struct {
-	ConfVersion string `yaml:"version"`
+	ConfVersion string `yaml:"version,omitempty"`
 	Lexer       struct {
 		StrictMode bool `yaml:"strict_mode,omitempty"`
 		Rules      []struct {
@@ -25,23 +24,28 @@ type goplyYamlConfig struct {
 // Create a lexer from a yaml config
 // the config should be the config source and not a file path
 // this allows loading the config from file as well as memory
-// like the source file
 // returns an error if could not read the yaml properly
-func NewLexerFromYamlConfig(yamlConfig []byte, source string) (*Lexer, error) {
+func NewLexerFromYamlConfig(yamlConfig []byte) (*Lexer, error) {
 	var gyc goplyYamlConfig
 	// strict mode set to true by default
 	gyc.Lexer.StrictMode = true
+	//gyc.ConfVersion = "invalid"
 	err := yaml.UnmarshalStrict([]byte(yamlConfig), &gyc)
 	if err != nil {
 		return nil, err
 	}
 
 	if gyc.ConfVersion != goplyConfVersion {
+		if gyc.ConfVersion == "" {
+			gyc.ConfVersion = "none"
+		}
+
+		//fmt.Printf("%v", gyc.ConfVersion)
+
 		return nil, fmt.Errorf("expected yaml conf version %s, got %s", goplyConfVersion, gyc.ConfVersion)
 	}
 
-	lex := &Lexer{ls: LexerState{SourceLength: len(source) - 1, Source: source},
-		lexRules: make(map[string]*regexp.Regexp), lexerErrorFunc: defaultLexerError, strictMode: gyc.Lexer.StrictMode}
+	lex := NewLexer(gyc.Lexer.StrictMode)
 
 	for _, rule := range gyc.Lexer.Rules {
 		if rule.Type != "" && rule.Regex != "" {

@@ -1,40 +1,30 @@
 package goply_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/nayas360/goply"
 )
 
 func BenchmarkNewLexer(b *testing.B) {
-	source := `func test() {
-	num := 123
-	var num2 = 123
-}
-`
+
+	// the source would repeate after 100 iterations
+	// caching should take place
+	//b.ReportAllocs()
+	repeatAfter := 100
+
+	lexer := goply.NewLexer(true)
+	lexer.AddRule("<number>", "[0-9]+")
+	b.ResetTimer()
+
 	for i := 0; i < b.N; i++ {
-		lexer := goply.NewLexer(source)
-		lexer.AddRule("<lparen>", "\\(")
-		lexer.AddRule("<rparen>", "\\)")
-		lexer.AddRule("<lbrace>", "{")
-		lexer.AddRule("<rbrace>", "}")
-
-		lexer.AddRule("<assign>", ":=")
-		lexer.AddRule("<eq>", "=")
-
-		lexer.AddRule("<func_kw>", "func")
-		lexer.AddRule("<var_kw>", "var")
-
-		lexer.AddRule("<identifier>", "[A-Za-z_][A-Za-z0-9]+")
-		lexer.AddRule("<number>", "[0-9]+")
-
-		lexer.Ignore("\\s+")
-		tokens, err := lexer.GetTokens()
+		tokens, err := lexer.GetTokens(fmt.Sprintf("%d", b.N%repeatAfter))
 		if err != nil {
 			b.Errorf("got error instead of tokens, %s", err)
 		}
-		if len(tokens) != 13 {
-			b.Error("expected 13 tokens got,", len(tokens))
+		if len(tokens) != 1 {
+			b.Error("expected 1 tokens got,", len(tokens))
 		}
 	}
 }

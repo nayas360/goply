@@ -1,7 +1,6 @@
 package goply
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -14,22 +13,17 @@ type Lexer struct {
 	ignoreRules      []*regexp.Regexp          // regular expressions to be ignored
 	lexerErrorFunc   func(ls LexerState) error // func to call for error
 	strictMode       bool                      // if true, returns error if no rules can be matched
+	tokenCache       map[string][]*Token       // a cache of token slices given a cacheID
 }
 
-// Create a new lexer for a given source text
-// This skips over characters that cannot be matched
-// by any rule
-func NewLexer(source string) *Lexer {
-	return &Lexer{ls: LexerState{SourceLength: len(source) - 1, Source: source},
-		lexRules: make(map[string]*regexp.Regexp), lexerErrorFunc: defaultLexerError, strictMode: false}
-}
-
-// Create a strict lexer for a given source text
-// This returns an error when processing if it cannot match any rule
-// for the sub string it is trying to match
-func NewLexerStrict(source string) *Lexer {
-	return &Lexer{ls: LexerState{SourceLength: len(source) - 1, Source: source},
-		lexRules: make(map[string]*regexp.Regexp), lexerErrorFunc: defaultLexerError, strictMode: true}
+// Create a new lexer
+// if strictMode is false
+// the lexer skips over characters that cannot be matched by any rule
+// else generates an error for the unmatched symbol
+func NewLexer(strictMode bool) *Lexer {
+	return &Lexer{ls: LexerState{}, //SourceLength: len(source) - 1, Source: source},
+		lexRules: make(map[string]*regexp.Regexp), tokenCache: make(map[string][]*Token),
+		lexerErrorFunc: defaultLexerError, strictMode: strictMode}
 }
 
 // When processing the source, all patterns matched by the regex
@@ -49,11 +43,22 @@ func (l *Lexer) Ignore(regexv string) {
 }
 
 // Processes the source text and returns the tokens
-func (l *Lexer) GetTokens() ([]*Token, error) {
-	// this is true if GetToken has been called once already
-	if l.ls.Position > 0 {
-		return nil, fmt.Errorf("the tokens have aready been generated")
+func (l *Lexer) GetTokens(sourceText string) ([]*Token, error) {
+	// compute sha1 of sourcetext for caching
+	sourceSha1 := computeSha1(sourceText)
+
+	// check if tokens for sourceText exists or not
+	if l.tokenCache[sourceSha1] != nil {
+		// if exists then return
+		return l.tokenCache[sourceSha1], nil
+	} else {
+		l.ls.Source = sourceText
+		l.ls.SourceLength = len(sourceText) - 1
+		l.ls.Position = 0
+		l.ls.LineNum = 0
+		l.ls.ColNum = 0
 	}
+
 	// build the slice of tokens
 	var tokens []*Token
 	token, err := l.nextToken()
@@ -67,18 +72,16 @@ func (l *Lexer) GetTokens() ([]*Token, error) {
 			return nil, err
 		}
 	}
+
+	// store the tokens in the cache
+	l.tokenCache[sourceSha1] = tokens
+
 	return tokens, nil
 }
 
 // Set a custom error handler for the lexer
 func (l *Lexer) SetLexerErrorFunc(f func(ls LexerState) error) {
 	l.lexerErrorFunc = f
-}
-
-// The default error handler
-func defaultLexerError(ls LexerState) error {
-	return fmt.Errorf("line %d, column %d: could not match '%c' with any rule", ls.LineNum, ls.ColNum,
-		ls.Source[ls.Position])
 }
 
 // returns the nextToken token from the source
