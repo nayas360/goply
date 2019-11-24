@@ -21,7 +21,7 @@ type Lexer struct {
 // the lexer skips over characters that cannot be matched by any rule
 // else generates an error for the unmatched symbol
 func NewLexer(strictMode bool) *Lexer {
-	return &Lexer{ls: LexerState{}, //SourceLength: len(source) - 1, Source: source},
+	return &Lexer{ls: LexerState{},
 		lexRules: make(map[string]*regexp.Regexp), tokenCache: make(map[string][]*Token),
 		lexerErrorFunc: defaultLexerError, strictMode: strictMode}
 }
@@ -61,13 +61,8 @@ func (l *Lexer) GetTokens(sourceText string) ([]*Token, error) {
 
 	// build the slice of tokens
 	var tokens []*Token
-	token, err := l.nextToken()
-	if err != nil {
-		return nil, err
-	}
-	for token != nil {
+	for token, err := l.nextToken(); token != nil; token, err = l.nextToken() {
 		tokens = append(tokens, token)
-		token, err = l.nextToken()
 		if err != nil {
 			return nil, err
 		}
