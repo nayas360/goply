@@ -44,7 +44,7 @@ func (l *Lexer) Ignore(regexv string) {
 
 // Processes the source text and returns the tokens
 func (l *Lexer) GetTokens(sourceText string) ([]*Token, error) {
-	// compute sha1 of sourcetext for caching
+	// compute sha1 of source text for caching
 	sourceSha1 := computeSha1(sourceText)
 
 	// check if tokens for sourceText exists or not
@@ -58,19 +58,18 @@ func (l *Lexer) GetTokens(sourceText string) ([]*Token, error) {
 		l.ls.LineNum = 0
 		l.ls.ColNum = 0
 	}
-
 	// build the slice of tokens
 	var tokens []*Token
-	for token, err := l.nextToken(); token != nil; token, err = l.nextToken() {
-		tokens = append(tokens, token)
+	for token, err := l.nextToken(); ; token, err = l.nextToken() {
 		if err != nil {
 			return nil, err
+		} else if token == nil {
+			break
 		}
+		tokens = append(tokens, token)
 	}
-
 	// store the tokens in the cache
 	l.tokenCache[sourceSha1] = tokens
-
 	return tokens, nil
 }
 
@@ -82,7 +81,6 @@ func (l *Lexer) SetLexerErrorFunc(f func(ls LexerState) error) {
 // returns the nextToken token from the source
 func (l *Lexer) nextToken() (*Token, error) {
 	if l.ls.Position <= l.ls.SourceLength {
-
 		// go through all the ignored lexRules
 		for _, lexRule := range l.ignoreRules {
 			// check if there is a match
@@ -94,7 +92,6 @@ func (l *Lexer) nextToken() (*Token, error) {
 				return l.nextToken()
 			}
 		}
-
 		// go through all the lexRules to tokenize
 		for _, tokenType := range l.lexRulesKeyOrder {
 			lexRule := l.lexRules[tokenType]
@@ -109,7 +106,6 @@ func (l *Lexer) nextToken() (*Token, error) {
 				return token, nil
 			}
 		}
-
 		if l.strictMode {
 			// strict mode enabled and could not match anything
 			return nil, l.lexerErrorFunc(l.ls)

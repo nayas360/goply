@@ -22,7 +22,6 @@ func TestNewLexer(t *testing.T) {
 
 	// lexer is in lenient mode,
 	// the following should not raise an error
-	//lexer.AddRule("<assign>", ":=")
 	lexer.AddRule("<eq>", "=")
 
 	lexer.AddRule("<func_kw>", "func")
@@ -51,8 +50,6 @@ func TestNewLexerStrict(t *testing.T) {
 	// the lexer is in strict mode,
 	// and cannot match the ':' character to any rule
 	// this should raise an error
-	//lexer.AddRule("<assign>", ":=")
-
 	lexer.AddRule("<identifier>", "[A-Za-z_][A-Za-z0-9]+")
 	lexer.AddRule("<number>", "[0-9]+")
 

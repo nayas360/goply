@@ -30,6 +30,6 @@ lexer:
 		t.Errorf("got error instead of tokens, %s", err)
 	}
 	if len(tokens) != 3 {
-		t.Errorf("expected 3 tokens got, %s", len(tokens))
+		t.Errorf("expected 3 tokens got, %d", len(tokens))
 	}
 }

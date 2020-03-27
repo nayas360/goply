@@ -8,12 +8,10 @@ import (
 )
 
 func BenchmarkNewLexer(b *testing.B) {
-
-	// the source would repeate after 100 iterations
+	// the source would repeat after 100 iterations
 	// caching should take place
-	//b.ReportAllocs()
+	b.ReportAllocs()
 	repeatAfter := 100
-
 	lexer := goply.NewLexer(true)
 	lexer.AddRule("<number>", "[0-9]+")
 	b.ResetTimer()
