@@ -10,27 +10,22 @@ type Operator struct {
 	E node.Expression
 }
 
-func (o Operator) Parse(tokens *goply.TokenStream) error {
+func (o *Operator) Parse(tokens *goply.TokenStream) error {
 	if tokens.EOS() {
 		return ast.EndOfTokenStreamErr
 	}
-	var op node.Operator
 	if o.E != nil {
-		op = &Binary{Left: o.E}
+		o.E = &Binary{Left: o.E}
 	} else {
-		op = &Binary{}
+		// no left context unary operator
+		o.E = &Binary{}
 	}
-	err := op.Parse(tokens)
-	if err != nil {
-		return err
-	}
-	o.E = op
-	return nil
+	return o.E.Parse(tokens)
 }
 
-func (o Operator) String() string {
+func (o *Operator) String() string {
 	return o.E.String()
 }
 
-func (o Operator) Expression() {}
-func (o Operator) Operator()   {}
+func (o *Operator) Expression() {}
+func (o *Operator) Operator()   {}
