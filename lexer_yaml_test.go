@@ -25,11 +25,11 @@ lexer:
 	if err != nil {
 		t.Errorf("could not create a new lexer from yaml config, %s", err)
 	}
-	tokens, err := lex.GetTokens(source)
+	tokens, err := lex.GetTokenStream(source)
 	if err != nil {
 		t.Errorf("got error instead of tokens, %s", err)
 	}
-	if len(tokens) != 3 {
-		t.Errorf("expected 3 tokens got, %d", len(tokens))
+	if tokens.Len() != 3 {
+		t.Errorf("expected 3 tokens got, %d", tokens.Len())
 	}
 }

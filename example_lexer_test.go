@@ -21,12 +21,12 @@ func ExampleNewLexer() {
 	// ignore all whitespace
 	lexer.Ignore("\\s+")
 	// get the tokens
-	tokens, err := lexer.GetTokens("= (+ 10 20)")
+	tokens, err := lexer.GetTokenStream("= (+ 10 20)")
 	if err != nil {
 		panic(err)
 	}
 	// print out the tokens
-	for _, token := range tokens {
+	for token := range tokens.Iter() {
 		fmt.Printf("Got %s : %s\n", token.Type, token.Value)
 	}
 	// Output:
@@ -51,12 +51,12 @@ func ExampleNewLexer_strict() {
 	// ignore all whitespace
 	lexer.Ignore("\\s+")
 	// get the tokens
-	tokens, err := lexer.GetTokens("(+ 10 20)")
+	tokens, err := lexer.GetTokenStream("(+ 10 20)")
 	if err != nil {
 		panic(err)
 	}
 	// print out the tokens
-	for _, token := range tokens {
+	for token := range tokens.Iter() {
 		fmt.Printf("Got %s : %s\n", token.Type, token.Value)
 	}
 	// Output:
@@ -90,12 +90,12 @@ lexer:
 		panic(err)
 	}
 	// get the tokens
-	tokens, err := lex.GetTokens(source)
+	tokens, err := lex.GetTokenStream(source)
 	if err != nil {
 		panic(err)
 	}
 	// print out the tokens
-	for _, token := range tokens {
+	for token := range tokens.Iter() {
 		fmt.Printf("Got %s : %s\n", token.Type, token.Value)
 	}
 	// Output:
@@ -129,12 +129,12 @@ lexer:
 		panic(err)
 	}
 	// get the tokens
-	tokens, err := lex.GetTokens(source)
+	tokens, err := lex.GetTokenStream(source)
 	if err != nil {
 		panic(err)
 	}
 	// print out the tokens
-	for _, token := range tokens {
+	for token := range tokens.Iter() {
 		fmt.Printf("Got %s : %s\n", token.Type, token.Value)
 	}
 	// Output:

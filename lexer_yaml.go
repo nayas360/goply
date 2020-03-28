@@ -29,24 +29,17 @@ func NewLexerFromYamlConfig(yamlConfig []byte) (*Lexer, error) {
 	var gyc goplyYamlConfig
 	// strict mode set to true by default
 	gyc.Lexer.StrictMode = true
-	//gyc.ConfVersion = "invalid"
 	err := yaml.UnmarshalStrict([]byte(yamlConfig), &gyc)
 	if err != nil {
 		return nil, err
 	}
-
 	if gyc.ConfVersion != goplyConfVersion {
 		if gyc.ConfVersion == "" {
 			gyc.ConfVersion = "none"
 		}
-
-		//fmt.Printf("%v", gyc.ConfVersion)
-
 		return nil, fmt.Errorf("expected yaml conf version %s, got %s", goplyConfVersion, gyc.ConfVersion)
 	}
-
 	lex := NewLexer(gyc.Lexer.StrictMode)
-
 	for _, rule := range gyc.Lexer.Rules {
 		if rule.Type != "" && rule.Regex != "" {
 			lex.AddRule(rule.Type, rule.Regex)

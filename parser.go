@@ -5,11 +5,11 @@ type Parser struct {
 }
 
 func (p Parser) Parse(source string, root AstNode) error {
-	tokens, err := p.lex.GetTokens(source)
+	tokens, err := p.lex.GetTokenStream(source)
 	if err != nil {
 		return err
 	}
-	return root.Parse(tokens, 0)
+	return root.Parse(tokens)
 }
 
 func NewParser(lexer *Lexer) *Parser {

@@ -13,7 +13,7 @@ type Lexer struct {
 	ignoreRules      []*regexp.Regexp          // regular expressions to be ignored
 	lexerErrorFunc   func(ls LexerState) error // func to call for error
 	strictMode       bool                      // if true, returns error if no rules can be matched
-	tokenCache       map[string][]*Token       // a cache of token slices given a cacheID
+	tokenCache       map[string]*TokenStream   // a cache of token slices given a cacheID
 }
 
 // Create a new lexer
@@ -22,7 +22,7 @@ type Lexer struct {
 // else generates an error for the unmatched symbol
 func NewLexer(strictMode bool) *Lexer {
 	return &Lexer{ls: LexerState{},
-		lexRules: make(map[string]*regexp.Regexp), tokenCache: make(map[string][]*Token),
+		lexRules: make(map[string]*regexp.Regexp), tokenCache: make(map[string]*TokenStream),
 		lexerErrorFunc: defaultLexerError, strictMode: strictMode}
 }
 
@@ -43,7 +43,7 @@ func (l *Lexer) Ignore(regexv string) {
 }
 
 // Processes the source text and returns the tokens
-func (l *Lexer) GetTokens(sourceText string) ([]*Token, error) {
+func (l *Lexer) GetTokenStream(sourceText string) (*TokenStream, error) {
 	// compute sha1 of source text for caching
 	sourceSha1 := computeSha1(sourceText)
 
@@ -69,8 +69,8 @@ func (l *Lexer) GetTokens(sourceText string) ([]*Token, error) {
 		tokens = append(tokens, token)
 	}
 	// store the tokens in the cache
-	l.tokenCache[sourceSha1] = tokens
-	return tokens, nil
+	l.tokenCache[sourceSha1] = &TokenStream{tokens: &tokens, p: 0}
+	return l.tokenCache[sourceSha1], nil
 }
 
 // Set a custom error handler for the lexer

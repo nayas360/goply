@@ -12,6 +12,6 @@ func computeSha1(text string) string {
 
 // The default error handler
 func defaultLexerError(ls LexerState) error {
-	return fmt.Errorf("line %d, column %d: could not match '%c' with any rule", ls.LineNum, ls.ColNum,
+	return fmt.Errorf("[error: (%d:%d): could not match '%c' with any lexing rule", ls.LineNum, ls.ColNum,
 		ls.Source[ls.Position])
 }

@@ -32,13 +32,13 @@ func TestNewLexer(t *testing.T) {
 
 	lexer.Ignore("\\s+")
 
-	tokens, err := lexer.GetTokens(source)
+	tokens, err := lexer.GetTokenStream(source)
 	if err != nil {
 		t.Errorf("got error instead of tokens, %s", err)
 	}
 
-	if len(tokens) != 13 {
-		t.Error("expected 13 tokens got,", len(tokens))
+	if tokens.Len() != 13 {
+		t.Error("expected 13 tokens got,", tokens.Len())
 	}
 }
 
@@ -55,7 +55,7 @@ func TestNewLexerStrict(t *testing.T) {
 
 	lexer.Ignore("\\s+")
 
-	_, err := lexer.GetTokens(source)
+	_, err := lexer.GetTokenStream(source)
 	if err == nil {
 		t.Errorf("expected an error, got none")
 	}
@@ -67,7 +67,7 @@ func TestLexerStrict_SetLexerErrorFunc(t *testing.T) {
 	lexer.SetLexerErrorFunc(func(ls goply.LexerState) error {
 		return fmt.Errorf("there was an error")
 	})
-	_, err := lexer.GetTokens("123")
+	_, err := lexer.GetTokenStream("123")
 	if fmt.Sprint(err) != "there was an error" {
 		t.Error("the custom error function was not set")
 	}
@@ -81,7 +81,7 @@ func TestLexer_SetLexerErrorFunc(t *testing.T) {
 	lexer.SetLexerErrorFunc(func(ls goply.LexerState) error {
 		return fmt.Errorf("there was an error")
 	})
-	_, err := lexer.GetTokens("123")
+	_, err := lexer.GetTokenStream("123")
 	if err != nil {
 		t.Error("the lexer returned an error in lenient mode")
 	}

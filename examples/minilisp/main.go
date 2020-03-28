@@ -23,12 +23,12 @@ func main() {
 		panic(err)
 	}
 	// get the tokens
-	tokens, err := lex.GetTokens(source)
+	tokens, err := lex.GetTokenStream(source)
 	if err != nil {
 		panic(err)
 	}
 	// print the tokens
-	for _, token := range tokens {
+	for token := range tokens.Iter() {
 		fmt.Printf("Got %s : %s\n", token.Type, token.Value)
 	}
 }

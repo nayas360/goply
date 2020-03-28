@@ -17,12 +17,12 @@ func BenchmarkNewLexer(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		tokens, err := lexer.GetTokens(fmt.Sprintf("%d", b.N%repeatAfter))
+		tokens, err := lexer.GetTokenStream(fmt.Sprintf("%d", b.N%repeatAfter))
 		if err != nil {
 			b.Errorf("got error instead of tokens, %s", err)
 		}
-		if len(tokens) != 1 {
-			b.Error("expected 1 tokens got,", len(tokens))
+		if tokens.Len() != 1 {
+			b.Error("expected 1 tokens got,", tokens.Len())
 		}
 	}
 }

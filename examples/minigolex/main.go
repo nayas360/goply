@@ -30,12 +30,12 @@ func main() {
 
 	l.Ignore("\\s+")
 
-	tokens, err := l.GetTokens(source)
+	tokens, err := l.GetTokenStream(source)
 	if err != nil {
 		panic(err)
 	}
 
-	for _, token := range tokens {
+	for token := range tokens.Iter() {
 		fmt.Printf("Got %s : \"%s\" on line %d column %d \n", token.Type, token.Value, token.LineNum,
 			token.ColNum)
 	}
